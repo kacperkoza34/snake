@@ -1,0 +1,52 @@
+/*GLOBAL*/
+
+$main-color: #dfe6e9;
+
+*, *::before, *::after {
+        box-sizing: border-box;
+}
+
+section {
+  background-color: $main-color;
+  height: 100vh;
+}
+.row {
+  height: 300px;
+  width: 300px
+}
+span {
+  font-size: 50px;
+}
+
+p {
+  text-align: center;
+}
+.board-element {
+  width: 20px;
+  height: 20px;
+  background: green;
+  //border-width: 0.5px;
+  //border-color: rgba(0,0,0,0.3);
+  //border-style: solid;
+}
+.snake{
+  background: black;
+  border-width: 0.5px;
+  border-color: rgba(255,255,255,0.3);
+  border-style: solid;
+}
+.snake-head{
+  background: red;
+  border-width: 0.5px;
+  border-color: rgba(255,255,255, 0.3);
+  border-style: solid;
+}
+.dead{
+  background: grey;
+  border-width: 0.5px;
+  border-color: rgba(255,255,255, 0.3);
+  border-style: solid;
+}
+.food{
+  background: yellow;
+}
