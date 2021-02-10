@@ -1,25 +1,35 @@
-class Food{
-  constructor(snakeArray){
+import getRandomInt from "../utils/getRandomInt.js";
+
+class Food {
+  constructor(snakeArray, boardSize) {
     const thisFood = this;
-    thisFood.initFood(snakeArray);
+    thisFood.boardSize = boardSize;
+    thisFood.snakeArray = snakeArray;
+    thisFood.initFood();
   }
 
-  initFood(snakeArray){
+  initFood() {
     const thisFood = this;
-    let xPoint = Math.floor(Math.random()*14+1);
-    let yPoint = Math.floor(Math.random()*14+1);
-    //console.log(snakeArray.length);
-    const pointSelector = yPoint + '-' + xPoint;
-    const startPoint = document.getElementById(pointSelector);
-  //  console.log(snakeArray);
+    const { boardSize, snakeArray } = thisFood;
+
+    let xPoint = getRandomInt(1, boardSize);
+    let yPoint = getRandomInt(1, boardSize);
+    const pointSelector = `${yPoint}-${xPoint}`;
+
+    const startPoint = document.querySelector(
+      `[data-index="${pointSelector}"]`
+    );
+
     let check = true;
-    for(let i = 0; i < snakeArray.length; i++){
-      if(snakeArray[i] == startPoint){
+    for (let i = 0; i < snakeArray.length; i++) {
+      if (snakeArray[i] === startPoint) {
         check = false;
       }
     }
-    if(check) startPoint.classList.add('food');
-    else new Food(snakeArray);
+
+    if (check) {
+      startPoint.classList.add("food");
+    } else thisFood.initFood(snakeArray);
   }
 }
 

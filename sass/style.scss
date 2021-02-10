@@ -1,52 +1,157 @@
-/*GLOBAL*/
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
-$main-color: #dfe6e9;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-*, *::before, *::after {
-        box-sizing: border-box;
+element {
+  border: none;
+  background-image: none;
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+/*SETTINGS*/
+
+$grass-color: #53fa38;
+$snake-color: #0e1717;
+$snake-head-color: #7f0000;
+$snake-dead: #838383;
+$food-color: #ffff1a;
+$border-color: rgba(255, 255, 255, 0.3);
+$primary-color: #e661fa;
+$secondary-color: #edfa6e;
+$transition: 0.3s;
+
+body {
+  margin: 0;
+  background: $secondary-color;
+  font-family: "Roboto", sans-serif;
+  color: #fff;
 }
 
 section {
-  background-color: $main-color;
-  height: 100vh;
-}
-.row {
-  height: 300px;
-  width: 300px
-}
-span {
-  font-size: 50px;
+  margin: 15px;
 }
 
-p {
-  text-align: center;
+/*FORM*/
+
+form {
+  display: inline-block;
+  background: $primary-color;
+  width: 400px;
+  padding: 15px;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
+
+  input {
+    background: inherit;
+    font-size: inherit;
+    color: inherit;
+    outline: none;
+    border: none;
+    max-width: 100px;
+    border-bottom: 1px solid $secondary-color;
+  }
+
+  button {
+    width: 56px;
+    height: 30px;
+    color: inherit;
+    font-size: inherit;
+    background: inherit;
+    border: 1px solid $secondary-color;
+  }
+  button:hover {
+    cursor: pointer;
+  }
+}
+
+/*BOARD*/
+
+.board {
+  position: relative;
+  display: grid;
+  margin: 20px 0;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.75);
 }
 .board-element {
   width: 20px;
   height: 20px;
-  background: green;
-  //border-width: 0.5px;
-  //border-color: rgba(0,0,0,0.3);
-  //border-style: solid;
+  background: $grass-color;
+  font-size: 7px;
+  text-align: center;
+  padding: 5px;
 }
-.snake{
-  background: black;
+
+.current-score {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 10px;
+  font-size: 30px;
+}
+
+/*SNAKE*/
+
+.snake {
+  background: $snake-color;
   border-width: 0.5px;
-  border-color: rgba(255,255,255,0.3);
+  border-color: $border-color;
+  border-style: dotted;
+}
+.head {
+  background: $snake-head-color;
+  border-width: 0.5px;
+  border-color: $border-color;
   border-style: solid;
 }
-.snake-head{
-  background: red;
+.dead {
+  background: $snake-dead;
   border-width: 0.5px;
-  border-color: rgba(255,255,255, 0.3);
+  border-color: $border-color;
   border-style: solid;
+  transition: $transition;
 }
-.dead{
-  background: grey;
-  border-width: 0.5px;
-  border-color: rgba(255,255,255, 0.3);
-  border-style: solid;
+
+/*FOOD*/
+
+.food {
+  background: $food-color;
 }
-.food{
-  background: yellow;
+
+/*BUTTON ANIMATION*/
+.button-animation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+  }
+
+  @for $i from 1 through 6 {
+    span:nth-child(#{$i}n) {
+      animation-delay: #{$i * 0.2}s;
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }

@@ -1,119 +1,169 @@
-import Food from './Food.js';
+import Food from "./Food.js";
+import getRandomInt from "../utils/getRandomInt.js";
 
-class Snake{
-  constructor(){
+class Snake {
+  constructor(snakeSpeed, boardSize) {
     const thisSnake = this;
+    thisSnake.snakeSpeed = snakeSpeed;
+    thisSnake.boardSize = boardSize;
+    thisSnake.snakeArray = [];
+    thisSnake.directions = { up: 2, down: 0, rigth: 1, left: 3 };
     thisSnake.initSnake();
   }
 
-  initSnake(){
+  initSnake() {
     const thisSnake = this;
-    let xPoint = Math.floor(Math.random()*7+4);
-    let yPoint = Math.floor(Math.random()*7+4);
-    let snakeArray = [];
-    let direction = Math.floor(Math.random()*4);
+    const {
+      boardSize,
+      snakeArray,
+      directions: { up, down, rigth, left }
+    } = thisSnake;
 
-    for(let i = 0; i<3; i++){
-      if(direction == 0) yPoint++;
-      else if(direction == 1) xPoint++;
-      else if(direction == 2) yPoint--;
-      else if(direction == 3) xPoint--;
+    let xPoint = getRandomInt(2, boardSize - 2);
+    let yPoint = getRandomInt(2, boardSize - 2);
+    const direction = getRandomInt(0, 3);
 
-      const pointSelector = yPoint + '-' + xPoint;
-      const startPoint = document.getElementById(pointSelector);
+    for (let i = 0; i < 3; i++) {
+      if (down === 0) yPoint++;
+      else if (rigth === 1) xPoint++;
+      else if (up === 2) yPoint--;
+      else if (left === 3) xPoint--;
+
+      const pointSelector = yPoint + "-" + xPoint;
+      const startPoint = document.querySelector(
+        `[data-index="${pointSelector}"]`
+      );
       snakeArray.push(startPoint);
     }
-    new Food(snakeArray);
-    thisSnake.moveSnake(snakeArray, direction, xPoint, yPoint);
+    new Food(snakeArray, boardSize);
+    thisSnake.moveSnake(direction, xPoint, yPoint);
   }
 
-  control(evt,direction){
+  moveSnake(direction, xPoint, yPoint) {
     const thisSnake = this;
-      if(evt == 37){
-        if(direction != 1) direction = 3;
-      }
-      else if(evt == 38){
-        if(direction != 0) direction = 2;
-      }
-      else if(evt == 39){
-        if(direction != 3) direction = 1;
-      }
-      else if(evt == 40){
-        if(direction != 2) direction = 0;
-      }
-    return direction;
-  }
+    const {
+      snakeArray,
+      boardSize,
+      directions: { up, down, rigth, left }
+    } = thisSnake;
 
-  generateSnake(snakeArray){
-    const thisSnake = this;
-    for(let snake in snakeArray){
-      if(snakeArray[snakeArray.length-1] == snakeArray[snake]){
-        snakeArray[snake].classList.add('snake-head')
-      }
-      snakeArray[snake].classList.add('snake');
-      if(snakeArray[snakeArray.length-2] == snakeArray[snake]){
-        snakeArray[snake].classList.remove('snake-head')
-      }
-    }
-  }
-
-  colision(snakeArray, head, time){
-    const thisSnake = this;
-    for(let i = 1; i<snakeArray.length-1; i++){
-      if(snakeArray[i] == head){
-        thisSnake.gameOver(snakeArray, time);
-      }
-    }
-  }
-
-  eat(head){
-    const food = document.querySelector('.food');
-    if(food == head){
-      food.classList.remove('food');
-      return true;
-    }
-  }
-
-  gameOver(snakeArray, time){
-    const thisSnake = this;
-    clearInterval(time);
-    for(let snake in snakeArray){
-       snakeArray[snake].classList.add('dead');
-    }
-  }
-
-  moveSnake(snakeArray, direction, xPoint, yPoint){
-    const thisSnake = this;
-    let time;
-    time = setInterval(function(){
-      window.addEventListener('keydown', function(){
-        if(event.keyCode == 37 || event.keyCode == 38 || event.keyCode == 39 || event.keyCode == 40){
+    const time = setInterval(function() {
+      window.addEventListener("keydown", function() {
+        if (
+          event.keyCode === 37 ||
+          event.keyCode === 38 ||
+          event.keyCode === 39 ||
+          event.keyCode === 40
+        ) {
+          event.preventDefault();
           direction = thisSnake.control(event.keyCode, direction);
         }
       });
 
-    if(direction == 0) yPoint++;
-    else if(direction == 1)xPoint++;
-    else if(direction == 2) yPoint--;
-    else if(direction == 3) xPoint--;
-    let id = yPoint + '-' + xPoint;
+      if (direction === down) yPoint++;
+      else if (direction === rigth) xPoint++;
+      else if (direction === up) yPoint--;
+      else if (direction === left) xPoint--;
+      const dataSelector = `${yPoint}-${xPoint}`;
 
-    if(yPoint == 16 || xPoint == 16 || yPoint == 0 || xPoint == 0){
-      thisSnake.gameOver(snakeArray,time);
-    }
-    else{
-      let newElement = document.getElementById(id);
-      snakeArray.push(newElement);
-      const head = snakeArray[snakeArray.length-1];
-      if(!thisSnake.eat(head)){
-        let remove = snakeArray.shift();
-        remove.classList.remove('snake');
+      if (
+        yPoint === boardSize + 1 ||
+        xPoint === boardSize + 1 ||
+        yPoint === 0 ||
+        xPoint === 0
+      ) {
+        thisSnake.gameOver(time);
+      } else {
+        let newElement = document.querySelector(
+          `[data-index="${dataSelector}"]`
+        );
+        snakeArray.push(newElement);
+        const head = snakeArray[snakeArray.length - 1];
+
+        if (!thisSnake.eat(head)) {
+          let remove = snakeArray.shift();
+          remove.classList.remove("snake");
+        } else new Food(snakeArray, boardSize);
+
+        thisSnake.colision(head, time);
+        thisSnake.generateSnake();
       }
-      else new Food(snakeArray);
-      thisSnake.colision(snakeArray,head, time);
-      thisSnake.generateSnake(snakeArray);
+    }, thisSnake.snakeSpeed);
+  }
+
+  control(evt, direction) {
+    const thisSnake = this;
+    const { up, down, rigth, left } = thisSnake.directions;
+
+    if (evt === 37) {
+      if (direction !== rigth) direction = left;
+    } else if (evt === 38) {
+      if (direction !== down) direction = up;
+    } else if (evt === 39) {
+      if (direction !== left) direction = rigth;
+    } else if (evt === 40) {
+      if (direction !== up) direction = down;
     }
-  },100);
+    return direction;
+  }
+
+  generateSnake() {
+    const thisSnake = this;
+    const { snakeArray } = thisSnake;
+    for (let snake in snakeArray) {
+      if (snakeArray[snakeArray.length - 1] == snakeArray[snake]) {
+        snakeArray[snake].classList.add("head");
+      }
+      snakeArray[snake].classList.add("snake");
+      if (snakeArray[snakeArray.length - 2] == snakeArray[snake]) {
+        snakeArray[snake].classList.remove("head");
+      }
+    }
+  }
+
+  colision(head, time) {
+    const thisSnake = this;
+    const { snakeArray } = thisSnake;
+    for (let i = 1; i < snakeArray.length - 1; i++) {
+      if (snakeArray[i] === head) {
+        thisSnake.gameOver(time);
+      }
+    }
+  }
+
+  eat(head) {
+    const thisSnake = this;
+    const food = document.querySelector(".food");
+    if (food === head) {
+      food.classList.remove("food");
+      const event = new CustomEvent("updateScore", {
+        bubbles: true,
+        detail: {
+          score: thisSnake.snakeArray.length - 3
+        }
+      });
+      food.dispatchEvent(event);
+
+      return true;
+    }
+  }
+
+  gameOver(time) {
+    const thisSnake = this;
+    const { snakeArray } = thisSnake;
+    clearInterval(time);
+
+    const event = new CustomEvent("gameOver", {
+      bubbles: true,
+      detail: {
+        score: thisSnake.snakeArray.length - 3
+      }
+    });
+    snakeArray[0].dispatchEvent(event);
+
+    for (let snake in snakeArray) {
+      snakeArray[snake].classList.add("dead");
+    }
   }
 }
 
